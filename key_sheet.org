@@ -1,0 +1,177 @@
+#+TITLE: Emacs Key Sheet
+#+AUTHOR: Ranbir Singh Deol
+#+DATE: <2024-08-01 Thu>
+#+DESCRIPTION: A document which stores all my keybindings
+
+* Table of Contents
+** C: Ctrl
+** M: Alt
+** RET: Enter
+** DEL: Backpace
+** SPC: Space
+** TAB: Tab
+
+* Movement Keys
+** C-f: Forward | M-f: Forward word
+** C-b: Backward | M-b: Backward word
+** C-n: Next line
+** C-p: Previous line
+
+** C-a: Start of line
+** C-e: End of line
+
+** C-o: Insert line
+** C-k: Delete line
+
+** C-v: Scroll down
+** M-v: Scroll back
+
+** M-g g: Go to line [x]
+** M-m: back to indentation
+
+** C-l: Center screen
+
+* Marking
+** C-SPC: Start mark
+** C-x h: Mark all
+
+* Important
+** C-x C-c: Exit
+
+* Windows
+** C-x 0: Delete this screen
+** C-x 1: Delete all other windows
+** C-x 2: Split screen horizontal
+** C-x 3: Horizontal split screen
+** C-x o: Swap screens
+
+** C-M-v: Scroll second screen
+
+* Buffers
+
+** C-x C-b: Open buffers
+** C-x ,: Swap buffers
+** M-x ev-b: Reload buffer
+** C-h h: Mark entire buffer
+
+* Config
+** C-M-x: Update configs w/ o restarting
+
+* Dired
+** R : Rename
+** x : Apply
+** + : Create directory
+** C-x C-f: Create a new file
+
+* Spell Check
+** M-$: Spell check a word
+
+* Shell
+** M-x: shell
+
+* Formating
+** M-; : Comment out a region
+
+* Case Change
+** M-u: Upper case
+** M-l: Lower case
+** M-c: Capitalize
+
+** C-x C-u: Upper Case a region
+** C-x C-l: Lower Case a region
+
+* Minibuffer
+** TAB: Auto completion
+** SPC: Auto complete up to one word
+** RET: Execute
+** ?: Possible completions
+
+* Copy and Pasting
+** DEL: Delete / Kill
+** M-DEL: Delete word before cursor
+** M-d: Delete word after cursor
+** C-w: Delete region
+** M-w: Copy to clipboard
+** C-x u: Undo
+
+* Files
+** C-x d: Navigate files
+** C-x C-n: Open dired sidebar
+** C-x C-f: Create / Find a file
+** C-x C-s: Save all files
+** C-x C-q: Read mode
+** C-x C-v: Replace file
+
+* Org-Mode
+** C-c C-t: Create a link
+** C-c C-s: Create a reminder
+** C-c . : Create a timestamp
+** C-c C-d: Create a deadline
+
+** C-c C-c: To check / uncheck
+** C-c C-c: Execute code within a block
+
+** Shift + Arrows: Modify Tags
+
+** C-c C-o: Open a link
+
+** C-RET: Continue a list
+
+** TAB: Collpase a header
+
+* Org-Roam
+** C-c n n: Find a node
+** C-c n i: Create a node
+** C-c n I: Create a node without details
+
+** C-M-i: Completion at a point
+
+** C-c n l: Open backlinks
+** C-c n g: Open Node Link Graph
+
+** C-M-j: Create note without auto completion
+
+** C-c n p: Create a sub node
+
+** C-c n d n: Create a new journal entry
+
+** C-c n d d: Review today's journal entries
+
+** C-c n d Y: Create a journal for yesterday
+** C-c n d y: Open yesterdays journal
+
+** C-c n d T: Create a journal for tomorrow
+** C-c n d t: Open tomorrows journal
+
+** C-c n d v: Capure a note for a specific date
+** C-c n d c: Go to a journal for a specific date
+
+** C-c n d b: Go back one exisitng date file
+** C-c n d f: Go forward one existing date file
+
+** C-c n t: Search for a node with a specific tag
+
+* Org-Agenda
+** C-c o a: Open agenda
+** b: Back a day
+** f: Forward a day
+
+* Custom-Keybinds
+** C-c o e: Export a .org file to PDF
+
+** C-c o k: Open key Sheet
+** C-c o d: Open devhub
+** C-c o n: Open notehub
+** C-c o c: Open config.el
+** C-c o q: Open quick menu
+
+** C-c g t: Go to the top of the buffer
+** C-c g b: Go to the bottom of the buffer
+
+* CLisp
+** C-c C-k: Compile and run code
+** M-x slime: Open lisp buffer
+
+* Help
+** C-h k: Describe a key-bind | ex: C-h k C-x s
+** C-h f: Describe a function
