@@ -37,7 +37,7 @@
 ;; | [SETTINGS] |
 
 ;; Dracula theme for a dark color scheme
-(use-package dracula-theme  :config
+(use-package dracula-theme :config
   (load-theme 'dracula t))
 
 ;; Minimal UI for a cleaner look
@@ -66,7 +66,7 @@
 
 ;; Disable spc in minibuffer
 (define-key minibuffer-local-completion-map "\M- "
-    (lambda () (interactive) (insert " ")))
+            (lambda () (interactive) (insert " ")))
 
 ;; Changing where backups are saved
 (setq backup-directory-alist '(("." . "/mnt/g/My Drive/backups/emacs-backup")))
@@ -249,7 +249,7 @@
 
   ;; Fancy Lambdas
   (global-prettify-symbols-mode t)
-  
+
   ;; Enable Babel languages for code execution
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -328,43 +328,43 @@
   (org-roam-capture-templates
    '(
      ("f" "Fleeting Note" plain
-     "%?\n* Note:\n\n\n* Next Action:\n\n"
-     :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+source: %^{Source}\n#+filetags: fleeting")
-     :unnarrowed t)
+      "%?\n* Note:\n\n\n* Next Action:\n\n"
+      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+source: %^{Source}\n#+filetags: fleeting")
+      :unnarrowed t)
 
-    ("l" "Literature Note" plain
-     "%?\n* Atomic Idea:\n\n\n* Summary:\n\n\n* Quotes (if applicable):\n\n\n* Reflection:\n\n\n* References:\n\n"
-     :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: literature")
-     :unnarrowed t)
+     ("l" "Literature Note" plain
+      "%?\n* Atomic Idea:\n\n\n* Summary:\n\n\n* Quotes (if applicable):\n\n\n* Reflection:\n\n\n* References:\n\n"
+      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: literature")
+      :unnarrowed t)
 
-    ("c" "Class Note" plain
-     "%?\n* Core Ideas:\n\n\n* Key Takeaways:\n\n\n* Questions:\n\n\n* References:\n\n"
-     :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+course_code: %^{Course Code}\n#+filetags: class")
-     :unnarrowed t)
+     ("c" "Class Note" plain
+      "%?\n* Core Ideas:\n\n\n* Key Takeaways:\n\n\n* Questions:\n\n\n* References:\n\n"
+      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+course_code: %^{Course Code}\n#+filetags: class")
+      :unnarrowed t)
 
-    ("p" "Permanent Note" plain
-     "%?\n* Atomic Concept:\n\n\n* Explanation:\n\n\n* Connections:\n\n\n* References:\n\n"
-     :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: permanent")
-     :unnarrowed t)
+     ("p" "Permanent Note" plain
+      "%?\n* Atomic Concept:\n\n\n* Explanation:\n\n\n* Connections:\n\n\n* References:\n\n"
+      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: permanent")
+      :unnarrowed t)
 
-    ("i" "Index Note" plain
-     "%?\n* References:\n\n"
-     :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: index")
-     :unnarrowed t)
+     ("i" "Index Note" plain
+      "%?\n* References:\n\n"
+      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: index")
+      :unnarrowed t)
 
-    ("r" "Reference Note" plain
-     "%?\n* Synopsis:\n\n\n* Source:\n%^{Link/Path}"
-     :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+author: %^{Author}\n#+year: %^{Year}\n#+filetags: reference")
-     :unnarrowed t)
-    
-         ))
+     ("r" "Reference Note" plain
+      "%?\n* Synopsis:\n\n\n* Source:\n%^{Link/Path}"
+      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+author: %^{Author}\n#+year: %^{Year}\n#+filetags: reference")
+      :unnarrowed t)
+
+     ))
   ;; Keybinds for org-roam nodes
   :bind (("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n l" . org-roam-buffer-toggle)
          ("C-c n p" . org-id-get-create)
          :map org-mode-map
-         ("C-M-i"   . completion-at-point)
+         ("C-M-i" . completion-at-point)
          :map org-roam-dailies-map
          ("Y" . org-roam-dailies-capture-yesterday)
          ("T" . org-roam-dailies-capture-tomorrow))
@@ -450,7 +450,7 @@ with that tag or creates a new one."
   (interactive)
   (org-roam-capture- :node (org-roam-node-create)
                      :templates '(("i" "inbox" plain "* %?"
-                                  :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
+                                   :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
 
 (require 'org-refile)
 (defun my/org-roam-copy-todo-to-today ()
@@ -490,7 +490,7 @@ with that tag or creates a new one."
 (use-package org
   :ensure t
   :config
-  (require 'org-agenda))  ;; Explicitly load org-agenda
+  (require 'org-agenda)) ;; Explicitly load org-agenda
 
 ;; Requiring the org-agenda package
 (require 'org-agenda)
@@ -567,7 +567,7 @@ By default, includes files with the 'note' tag. Can be modified to include all f
   (let* ((file-dir "/mnt/g/My Drive/documents/filehub/pdfs/")
          (file-name (concat (file-name-as-directory file-dir)
                             (file-name-base (buffer-file-name)) ".pdf"))
-         (org-export-with-toc nil))  ;; Disable table of contents
+         (org-export-with-toc nil)) ;; Disable table of contents
     (org-latex-export-to-pdf)
     (rename-file (concat (file-name-base (buffer-file-name)) ".pdf") file-name t)))
 
@@ -635,16 +635,16 @@ By default, includes files with the 'note' tag. Can be modified to include all f
 ;; Enlight UI
 (defvar enlight-guix
   (propertize
-   " ..                             `.
- `--..```..`           `..```..--`   
-   .-:///-:::.       `-:::///:-.     
-      ````.:::`     `:::.````        
-           -//:`    -::-             
-            ://:   -::-              
-            `///- .:::`              
-             -+++-:::.               
-              :+/:::-                
-              `-....`                "
+   " .. `.
+`--..```..` `..```..--`
+.-:///-:::. `-:::///:-.
+````.:::` `:::.````
+-//:` -::-
+://: -::-
+`///- .:::`
+-+++-:::.
+:+/:::-
+`-....` "
    'face 'enlight-yellow-bold))
 
 ;; Enlight | Custom startup screen
