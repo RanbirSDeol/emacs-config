@@ -89,16 +89,8 @@
 (setq mouse-wheel-scroll-amount '(2 ((shift) . 10) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
-;; Full screen
-(defun my/fullscreen-on-startup ()
-  "Set Emacs to fullscreen on startup."
-  (add-to-list 'default-frame-alist '(fullscreen . maximized)))
-
-;; Setting our full screen to launch on startup
-(add-hook 'emacs-startup-hook 'my/fullscreen-on-startup)
-
 ;; Set the default font to "Source Code Pro" with a size of 14
-(set-face-attribute 'default nil :family "Source Code Pro" :height 190)
+(set-face-attribute 'default nil :family "Source Code Pro" :height 160)
 
 ;; All The Icons | Icons for folders
 (use-package all-the-icons
@@ -129,9 +121,27 @@
   (setq dired-sidebar-theme 'dracula)
   (setq dired-sidebar-use-term-integration t)
   (setq dired-sidebar-use-custom-font t)
-  (setq dired-sidebar-width 20))
+  (setq dired-sidebar-width 30))
 
-;; Set custom height for the mode line to make it thinner
+;; Treemacs | Tree manager for emacs
+(use-package treemacs
+  :ensure t
+  :bind
+  (("C-c o t" . treemacs))
+  :config
+  (setq treemacs-width 30
+        treemacs-follow-mode t
+        treemacs-filewatch-mode t
+        treemacs-git-mode 'deferred))
+
+;; Optional: Install and configure Treemacs Icons Dired
+(use-package treemacs-icons-dired
+  :after (treemacs dired)
+  :ensure t
+  :config
+  (treemacs-icons-dired-mode))
+
+;; Small mode-line
 (set-face-attribute 'mode-line nil
                     :height 0.9) ; Adjust the height as needed
 (set-face-attribute 'mode-line-inactive nil
@@ -146,6 +156,33 @@
   :custom
   (mood-line-glyph-alist mood-line-glyphs-fira-code))
 
+;; Open links in chrome
+(setq browse-url-generic-program "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe")
+(setq browse-url-browser-function 'browse-url-generic)
+
+;; Display time
+(require 'time)
+(setq display-time-format "%d, %b | %H:%M:%S |")
+(setq display-time-interval 1) ; Update interval in seconds
+(display-time-mode 1)
+
+;; Obsidian Emulation
+(use-package visual-fill-column
+  :ensure t
+  :hook ((org-mode . visual-fill-column-mode)))
+
+;; Setting it so that org-mode centers
+(setq visual-fill-column-width 95) ;; The less the thinner
+(setq visual-fill-column-center-text t)
+
+;; Full screen
+(defun my/fullscreen-on-startup ()
+  "Set Emacs to fullscreen on startup."
+  (add-to-list 'default-frame-alist '(fullscreen . maximized)))
+
+;; Setting our full screen to launch on startup
+(add-hook 'emacs-startup-hook 'my/fullscreen-on-startup)
+
 ;; =========================
 
 ;; | [EDITING] |
@@ -159,6 +196,7 @@
   :config
   (setq company-idle-delay 0.2)
   (setq company-minimum-prefix-length 1)
+  (global-company-mode)
   )
 
 ;; Flycheck | On-the-fly syntax checking
@@ -239,17 +277,16 @@
   ;; Basic Org mode settings
   (setq org-startup-indented t
         org-hide-emphasis-markers t
-        org-confirm-babel-evaluate nil)
-
-  ;; ;; Ellipsis icon
-  ;; (setq org-ellipsis "⤵")
+        org-confirm-babel-evaluate nil
+        org-directory "/mnt/g/My Drive/documents/notehub/org-roam"
+        org-agenda-files '("/mnt/g/My Drive/documents/notehub/org-roam"))
 
   ;; Org syntax highlighting
   (setq org-src-fontify-natively t)
 
   ;; Fancy Lambdas
   (global-prettify-symbols-mode t)
-
+  
   ;; Enable Babel languages for code execution
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -278,15 +315,6 @@
 (use-package org-bullets
   :ensure t
   :hook (org-mode . org-bullets-mode))
-
-;; Custom TODO Keywords and Faces
-(setq org-todo-keywords
-      '((sequence "TODO" "IN-PROGRESS" "CANCELLED" "DONE")))
-(setq org-todo-keyword-faces
-      '(("TODO" . (:foreground "orange" :weight bold))
-        ("IN-PROGRESS" . (:foreground "white" :weight bold))
-        ("CANCELLED" . (:foreground "red" :weight bold))
-        ("DONE" . (:foreground "green" :weight bold :strike-through t))))
 
 ;; Automatically refresh dired when files are created or deleted
 (add-hook 'dired-mode-hook 'auto-revert-mode)
@@ -327,34 +355,24 @@
   (org-adapt-indentation nil)
   (org-roam-capture-templates
    '(
-     ("f" "Fleeting Note" plain
-      "%?\n* Note:\n\n\n* Next Action:\n\n"
-      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+source: %^{Source}\n#+filetags: fleeting")
+     ("n" "Note" plain
+      "%?\n* ${title}\n\n\n\n* Connections:\n\n\n\n* Parent:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Note: :${Tag}:")
       :unnarrowed t)
 
-     ("l" "Literature Note" plain
-      "%?\n* Atomic Idea:\n\n\n* Summary:\n\n\n* Quotes (if applicable):\n\n\n* Reflection:\n\n\n* References:\n\n"
-      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: literature")
-      :unnarrowed t)
-
-     ("c" "Class Note" plain
-      "%?\n* Core Ideas:\n\n\n* Key Takeaways:\n\n\n* Questions:\n\n\n* References:\n\n"
-      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+course_code: %^{Course Code}\n#+filetags: class")
-      :unnarrowed t)
-
-     ("p" "Permanent Note" plain
-      "%?\n* Atomic Concept:\n\n\n* Explanation:\n\n\n* Connections:\n\n\n* References:\n\n"
-      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: permanent")
+     ("t" "Topic Note" plain
+      "%?\n* Children:\n\n\n* Parent:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Topic: :${Tag}:")
       :unnarrowed t)
 
      ("i" "Index Note" plain
-      "%?\n* References:\n\n"
-      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: index")
+      "%?\n* Children:\n\n\n* Parent:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Index: :${Tag}:")
       :unnarrowed t)
-
+     
      ("r" "Reference Note" plain
       "%?\n* Synopsis:\n\n\n* Source:\n%^{Link/Path}"
-      :if-new (file+head "${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+author: %^{Author}\n#+year: %^{Year}\n#+filetags: reference")
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+author: %^{Author}\n#+year: %^{Year}\n#+filetags: :Reference: :${Tag}:")
       :unnarrowed t)
 
      ))
@@ -408,6 +426,7 @@
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start nil))
+
 ;; =========================
 
 ;; | [ORG-ROAM IMPROVEMENTS] |
@@ -452,109 +471,109 @@ with that tag or creates a new one."
                      :templates '(("i" "inbox" plain "* %?"
                                    :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
 
-(require 'org-refile)
-(defun my/org-roam-copy-todo-to-today ()
-  "Copy the TODO item to today's Org-roam daily file when the TODO state change."
-  (interactive)
-  (let ((org-refile-keep t) ;; Set this to nil to delete the original!
-        (org-roam-dailies-capture-templates
-         '(("t" "tasks" entry "%?"
-            :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
-        today-file
-        pos)
-    (save-window-excursion
-      ;; Capture today's daily file
-      (org-roam-dailies--capture (current-time) t)
-      (setq today-file (buffer-file-name))
-      (setq pos (point)))
-
-    ;; Only refile if the target file is different than the current file
-    (unless (equal (file-truename today-file)
-                   (file-truename (buffer-file-name)))
-      (org-refile nil nil (list "Tasks" today-file nil pos)))))
-
-;; Hook to copy TODO items to today's daily file when their state changes to DONE
-(add-to-list 'org-after-todo-state-change-hook
-             (lambda ()
-               (when (equal org-state "DONE")
-                 (my/org-roam-copy-todo-to-today))))
-
 (setq org-roam-node-display-template
       (concat "${title:*} "
-              (propertize "${tags:20}" 'face 'org-tag)))
+              (propertize "${tags:40}" 'face 'org-tag)))
+
+(setq org-startup-indented t)  ;; Start with indentation for better visual hierarchy
+(setq org-hide-leading-stars t) ;; Hide leading stars to clean up the view
 
 ;; =========================
 
 ;; | [ORG-AGENDA] |
 
-(use-package org
-  :ensure t
-  :config
-  (require 'org-agenda)) ;; Explicitly load org-agenda
-
 ;; Requiring the org-agenda package
 (require 'org-agenda)
 
-;; Org-Agenda connecting to Org-Roam Files
-(defun my/org-roam-filter-by-tag (tag-name)
-  "Return a predicate function that check if a node has the specified TAG-NAME."
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
+;; Remove tags in org-agenda
+(setq org-agenda-hide-tags-regexp ".")
 
-(defun my/org-roam-list-notes-by-tag (tag-name)
-  "Return a list of file paths for Org-roam nodes that have the specified TAG-NAME."
-  (mapcar #'org-roam-node-file
-          (seq-filter
-           (my/org-roam-filter-by-tag tag-name)
-           (org-roam-node-list))))
+;; Remove details in org task view
+(setq org-agenda-prefix-format
+      '((agenda . " %i %-12:c%?-12t% s")
+        (todo   . " ")
+        (tags   . " %i %-12:c")
+        (search . " %i %-12:c")))
 
-(defun my/org-roam-list-all-notes ()
-  "Return a list of file paths for all Org-roam nodes."
-  (mapcar #'org-roam-node-file
-          (org-roam-node-list)))
+;; TODO keywords
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "CANCELLED(c)" "DONE(d)")))
 
-(defun my/org-roam-refresh-agenda-list ()
-  "Update `org-agenda-files` to include files based on specific criteria.
-By default, includes files with the 'note' tag. Can be modified to include all files."
-  (interactive)
-  ;; Change this line to include all files if desired:
-  ;; (setq org-agenda-files (my/org-roam-list-notes-by-tag "note"))
-  (setq org-agenda-files (my/org-roam-list-all-notes)))
+;; Capture a quick idea
+(defun org-capture-inbox ()
+     (interactive)
+     (call-interactively 'org-store-link)
+     (org-capture nil "i"))
 
-;; Build the agenda list the first time for the session
-(my/org-roam-refresh-agenda-list)
+;; Use full window for org-capture
+(add-hook 'org-capture-mode-hook 'delete-other-windows)
 
-;; Refresh Org-Agenda Bug
-(defun my/refresh-org-agenda-files ()
-  "Refresh `org-agenda-files` to include all Org-roam nodes."
-  (when (derived-mode-p 'org-mode)
-    (my/org-roam-refresh-agenda-list)))
+;; Move to ending of file later
+(define-key global-map (kbd "C-c n x") 'org-capture-inbox)
 
-(add-hook 'after-save-hook #'my/refresh-org-agenda-files)
-
-;; Customize the appearance of the agenda
 (setq org-agenda-custom-commands
-      '(("c" "Custom Agenda View"
-         ((agenda "" ((org-agenda-span 'day)))
-          (tags "TODO=\"TODO\""
-                ((org-agenda-overriding-header "Tasks to do")
-                 (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
-          (tags "TODO=\"IN-PROGRESS\""
-                ((org-agenda-overriding-header "In-Progress Tasks")))))))
+      '(("c" "Simple agenda view"
+         ((agenda "")
+          (alltodo "")))))
 
-;; Set the default agenda span to todays view
-(setq org-agenda-span 1)
+(defun air-org-skip-subtree-if-priority (priority)
+  "Skip an agenda subtree if it has a priority of PRIORITY.
 
-;; Set the default time range for agenda views
-(setq org-agenda-start-day "today")
+PRIORITY may be one of the characters ?A, ?B, or ?C."
+  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+        (pri-value (* 1000 (- org-lowest-priority priority)))
+        (pri-current (org-get-priority (thing-at-point 'line t))))
+    (if (= pri-value pri-current)
+        subtree-end
+      nil)))
 
-;; Automatically add newly created nodes to the agenda
-(defun my/org-roam-capture-add-to-agenda ()
-  "Add newly created Org-roam nodes to the agenda."
-  (when (org-roam-node-file (org-roam-node-at-point))
-    (add-to-list 'org-agenda-files (org-roam-node-file (org-roam-node-at-point)))))
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+         ((tags "PRIORITY=\"A\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "")
+          (alltodo ""
+                   ((org-agenda-skip-function
+                     '(or (air-org-skip-subtree-if-priority ?A)
+                          (org-agenda-skip-if nil '(scheduled deadline))))))))))
 
-(add-hook 'org-roam-capture-after-finalize-hook #'my/org-roam-capture-add-to-agenda)
+;; Am-Pm in Org Agena
+(setq org-agenda-timegrid-use-ampm t)
+
+;; ;; Set the default agenda span to todays view
+;; (setq org-agenda-span 1)
+
+;; ;; Set the default time range for agenda views
+;; (setq org-agenda-start-day "today")
+
+;; =========================
+;; | [BROWSER] |
+
+;; I don't think using a browser in emacs is the most fun experience?..
+
+;; ;; Ensure Emacs uses Python 3 for EAF
+;; (setenv "PYTHONPATH" "/usr/bin/python3")
+
+;; ;; Add EAF directory to load-path
+;; (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
+
+;; ;; Use-package configuration for EAF
+;; (use-package eaf
+;;   :load-path "~/.emacs.d/site-lisp/emacs-application-framework/"
+;;   :custom
+;;   (eaf-browser-continue-where-left-off t)  ;; Continue where you left off
+;;   (eaf-browser-enable-adblocker t)         ;; Enable Adblocker
+;;   :bind
+;;   ("C-c w" . eaf-open-browser)
+;;   :config
+;;   (require 'eaf)          ;; Ensure EAF core is loaded
+;;   (require 'eaf-browser)  ;; Load the browser module
+;;   ;; Define eaf keybindings
+;;   (eaf-bind-key scroll_up "C-n" eaf-browser-keybinding)
+;;   (eaf-bind-key scroll_down "C-p" eaf-browser-keybinding)
+;;   ;; More keybindings can be added similarly
+;; )
 
 ;; =========================
 
@@ -608,12 +627,6 @@ By default, includes files with the 'note' tag. Can be modified to include all f
 ;; Opens our agenda
 (global-set-key (kbd "C-c o a") 'org-agenda)
 
-;; Goes to top of the buffer
-(global-set-key (kbd "C-c g t") 'beginning-of-buffer)
-
-;; Goes to end of the buffer
-(global-set-key (kbd "C-c g b") 'end-of-buffer)
-
 ;; Insert a note immeditately key-binding
 (global-set-key (kbd "C-c n I") 'org-roam-node-insert-immediate)
 
@@ -634,17 +647,23 @@ By default, includes files with the 'note' tag. Can be modified to include all f
 
 ;; Enlight UI
 (defvar enlight-guix
+  ;; ASCII Art
   (propertize
-   " .. `.
-`--..```..` `..```..--`
-.-:///-:::. `-:::///:-.
-````.:::` `:::.````
--//:` -::-
-://: -::-
-`///- .:::`
--+++-:::.
-:+/:::-
-`-....` "
+   "⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣾⡿⠿⠿⢿⣿⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣀⣴⣿⠿⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣶⣄⠀⠀⠀⠀⠀
+⠀⠀⠀⢠⣾⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣷⣄⠀⠀⠀
+⠀⠀⣴⣿⠟⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠙⣿⣧⡀⠀
+⠀⣼⣿⠃⠀⠀⠀⠀⠀⠀⣾⣯⣈⣧⠀⠀⢰⣿⣅⣹⡀⠀⠀⠀⠀⠀⠈⢿⣷⠀
+⢰⣿⠇⠀⠀⠀⠀⠀⠀⠀⠹⢿⣿⠏⠀⠀⠈⠿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠘⣿⣇
+⣾⣿⠀⠀⢰⣾⡿⣷⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣰⠿⣿⣶⠀⠀⢻⣿
+⣿⣿⠀⠀⠀⢸⣷⣄⠉⠙⠛⠷⠶⠶⠶⠶⠶⠶⠶⠛⠛⠉⢀⣴⣿⠀⠀⠀⢸⣿
+⢻⣿⠀⠀⠀⠘⣿⣿⣷⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣿⣿⡏⠀⠀⠀⣼⣿
+⠸⣿⡇⠀⠀⠀⢻⣿⣿⣿⣿⣿⣷⣶⣶⣶⣶⣾⣿⣿⣿⣿⣿⣿⠁⠀⠀⢠⣿⡇
+⠀⢻⣿⣄⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⢀⣾⡟⠀
+⠀⠀⠻⣿⣦⠀⠀⠈⢻⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠃⠀⠀⣠⣿⡟⠀⠀
+⠀⠀⠀⠘⢿⣷⣤⡀⠀⠙⠷⣦⣀⡀⠀⠀⠀⣀⣤⡾⠋⠀⠀⣠⣾⡿⠋⠀⠀⠀
+⠀⠀⠀⠀⠀⠉⠻⣿⣶⣤⣀⡀⠉⠙⠛⠛⠛⠉⢁⣀⣤⣶⣿⠟⠋⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⠿⢿⣿⣷⣾⣿⡿⠿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀"
    'face 'enlight-yellow-bold))
 
 ;; Enlight | Custom startup screen

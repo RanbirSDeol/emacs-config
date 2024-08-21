@@ -3,15 +3,15 @@
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
 (("org-refile-last-stored"
- (filename . "~/Documents/notehub/org-roam/journal/2024-08-07.org")
- (front-context-string . "** DONE Lecture ")
- (rear-context-string . "2024-08-30 Fri>\n")
- (position . 324)
- (last-modified 26291 54920 599723 776000))
+ (filename . "/mnt/g/My Drive/documents/notehub/org-roam/journal/2024-08-19.org")
+ (front-context-string . "** DONE [#A] Fin")
+ (rear-context-string . "A] Finish Lab2\n\n")
+ (position . 800)
+ (last-modified 26307 64341 954774 318000))
 ("org-capture-last-stored"
- (filename . "/mnt/g/My Drive/Documents/notehub/org-roam/test_node.org")
- (front-context-string . "\n* References:\nT")
- (rear-context-string . "filetags: index\n")
+ (filename . "/mnt/g/My Drive/documents/notehub/org-roam/20240820200408-agenda.org")
+ (front-context-string . "\n* Agenda\n\n\n\n* R")
+ (rear-context-string . "etags: :Agenda:\n")
  (position . 134)
- (last-modified 26306 47644 272433 765000))
+ (last-modified 26309 12036 267823 286000))
 )

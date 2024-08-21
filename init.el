@@ -20,9 +20,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files nil)
  '(package-selected-packages
-   '(eyebrowse mood-line moody all-the-icons-dired all-the-icons dired-sidebar org-roam-ui org-roam company dracula-theme)))
+   '(w3m xwwp treemacs-icons-dired eyebrowse mood-line moody all-the-icons-dired all-the-icons dired-sidebar org-roam-ui org-roam company dracula-theme)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
