@@ -1,0 +1,2 @@
+;; Generated package description from writegood-mode.el  -*- no-byte-compile: t -*-
+(define-package "writegood-mode" "2.2.0" "Polish up poor writing on the fly" 'nil :commit "d54eadeedb8bf3aa0e0a584c0a7373c69644f4b8" :keywords '("writing" "weasel-words" "grammar") :url "http://github.com/bnbeckwith/writegood-mode")

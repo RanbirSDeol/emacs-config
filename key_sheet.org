@@ -107,6 +107,7 @@
 
 * Org-Mode
 ** C-c C-t: Create a link
+** C-c C-t: Change TODO ->
 ** C-c C-s: Create a reminder
 ** C-c . : Create a timestamp
 ** C-c C-d: Create a deadline
@@ -122,6 +123,7 @@
 
 ** TAB: Collpase a header
 
+
 * Org-Roam
 ** C-c n f: Find a node
 ** C-c n i: Create a node
@@ -132,7 +134,7 @@
 ** C-c n l: Open backlinks
 ** C-c n g: Open Node Link Graph
 
-** C-M-j: Create note without auto completion
+** C-M-j: Create note without auto-completion
 
 ** C-c n p: Create a sub node
 
@@ -141,10 +143,10 @@
 ** C-c n d d: Review today's journal entries
 
 ** C-c n d Y: Create a journal for yesterday
-** C-c n d y: Open yesterdays journal
+** C-c n d y: Open yesterday's journal
 
 ** C-c n d T: Create a journal for tomorrow
-** C-c n d t: Open tomorrows journal
+** C-c n d t: Open tomorrow's journal
 
 ** C-c n d v: Capure a note for a specific date
 ** C-c n d c: Go to a journal for a specific date
@@ -158,7 +160,7 @@
 ** C-c C-x _ : Stop the timer
 ** C-c C-x , : Pause the timer
 ** C-c C-x 0 : Start the timer
-** 
+vv** 
 * Org-Agenda
 ** C-c o a: Open agenda
 ** b: Back a day
@@ -181,6 +183,15 @@
 ** Use:
 *** C-x [: Go to the top
 *** C-x ]: Go the the bottom
+
+* Lang-tool
+** C-c l s: Start check
+** C-c l d: Stop check
+** C-c l c: Correct at a point
+** C-c l b: Correct entire buffer
+** C-c l e: Show error
+** RET: Previous correction
+** ENTER: Next correction
 
 * CLisp
 ** C-c C-k: Compile and run code

@@ -21,7 +21,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(w3m xwwp treemacs-icons-dired eyebrowse mood-line moody all-the-icons-dired all-the-icons dired-sidebar org-roam-ui org-roam company dracula-theme)))
+   '(lsp-ui dap-mode prettier-js tide rjsx-mode flycheck-popup-tip wucuo alert langtool flycheck-grammarly lsp-grammarly w3m xwwp treemacs-icons-dired eyebrowse mood-line moody all-the-icons-dired all-the-icons dired-sidebar org-roam-ui org-roam company dracula-theme)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

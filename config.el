@@ -2,8 +2,6 @@
 
 ;;; Commentary:
 
-;; ma config :D
-
 ;;; Code:
 
 ;; =========================
@@ -69,7 +67,7 @@
             (lambda () (interactive) (insert " ")))
 
 ;; Changing where backups are saved
-(setq backup-directory-alist '(("." . "/mnt/g/My Drive/backups/emacs-backup")))
+(setq backup-directory-alist '(("." . "/mnt/c/Users/ranbi/Dropbox/backups/emacs-backup")))
 
 ;; Custom Region Highlighting
 (custom-set-faces '(region ((t (:background "yellow" :foreground "black" :bold t)))))
@@ -127,7 +125,7 @@
 (use-package treemacs
   :ensure t
   :bind
-  (("C-c o t" . treemacs))
+  (("C-c o t" . my-treemacs-open-current-directory))
   :config
   (setq treemacs-width 30
         treemacs-follow-mode t
@@ -183,6 +181,14 @@
 ;; Setting our full screen to launch on startup
 (add-hook 'emacs-startup-hook 'my/fullscreen-on-startup)
 
+(defun my-dired-home ()
+  "Open Dired in the home directory."
+  (interactive)
+  (dired "/mnt/c/Users/ranbi/Dropbox/devhub"))  ;; Replace "~/" with any directory path you want
+
+;; Optionally bind it to a key
+(global-set-key (kbd "C-x d") 'my-dired-home)
+
 ;; =========================
 
 ;; | [EDITING] |
@@ -196,13 +202,26 @@
   :config
   (setq company-idle-delay 0.2)
   (setq company-minimum-prefix-length 1)
-  (global-company-mode)
-  )
+  (global-company-mode))
 
 ;; Flycheck | On-the-fly syntax checking
 (use-package flycheck
-  :config
+  :init
   (global-flycheck-mode))
+
+;; Flyspell with Hunspell dictionary
+(setq ispell-program-name "hunspell")
+(setq ispell-dictionary "en_US")  ;; Set your desired dictionary
+(setq ispell-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+
+;; Enable Flyspell in text modes
+(dolist (hook '(text-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode 1))))
+
+;; Disable Flyspell in certain modes
+(dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode -1))))
 
 ;; Ivy | Autocompletion in buffer and for words
 (use-package ivy
@@ -217,6 +236,24 @@
   :ensure t
   :config
   (counsel-mode 1))
+
+;; LanguageTool | Grammar checking
+(use-package langtool
+  :ensure t
+  :init
+  (setq langtool-language-tool-jar "~/opt/LanguageTool-6.4/languagetool-commandline.jar") ;; Update with the path to your language-tool.jar
+  (setq langtool-mother-tongue "en"))
+
+;; Keybindings for LanguageTool
+;; Starting and stopping a langcheck
+(global-set-key (kbd "C-c l s") 'langtool-check)
+(global-set-key (kbd "C-c l d") 'langtool-check-done)
+;; Fix at point
+(global-set-key (kbd "C-c l c") 'langtool-correct-at-point)
+;; Correct the buffer
+(global-set-key (kbd "C-c l b") 'langtool-correct-buffer)
+;; Check what the language error is
+(global-set-key (kbd "C-c l e") 'langtool-show-brief-message-at-point)
 
 ;; =========================
 
@@ -260,15 +297,23 @@
 
 ;; [PYTHON]
 
+
+
 ;; =========================
 
 ;; [C]
 
+
+
+;; =========================
+
+;; [JavaScript]
+
+
+
 ;; =========================
 
 ;; | [ORG-MODE] |
-
-;; -- Setup --
 
 ;; Org | A document editing, formatting, and organizing file format
 (use-package org
@@ -278,8 +323,8 @@
   (setq org-startup-indented t
         org-hide-emphasis-markers t
         org-confirm-babel-evaluate nil
-        org-directory "/mnt/g/My Drive/documents/notehub/org-roam"
-        org-agenda-files '("/mnt/g/My Drive/documents/notehub/org-roam"))
+        org-directory "/mnt/c/Users/ranbi/Dropbox/notehub"
+        org-agenda-files '("/mnt/c/Users/ranbi/Dropbox/notehub"))
 
   ;; Org syntax highlighting
   (setq org-src-fontify-natively t)
@@ -333,6 +378,17 @@
 
 (set-face-background 'fringe (face-attribute 'default :background))
 
+;; -- Org-Timer --
+
+;; Org Timer Ended Message
+(setq org-show-notification-handler
+      (lambda (message)
+        ;; Display the bold notification in the minibuffer
+        (message (propertize "Pomodoro timer has ended!" 'face 'bold))
+        ;; Play the sound using Windows Media Player
+        (start-process "play-sound" nil "powershell.exe"
+                       "-c" "Start-Process 'wmplayer.exe' -ArgumentList 'C:\\Users\\ranbi\\Downloads\\Sounds\\ding.wav'")))
+
 ;; =========================
 
 ;; | [ORG-ROAM] |
@@ -346,18 +402,23 @@
   :ensure t
   :custom
   ;; Our org-roam directory
-  (org-roam-directory "/mnt/g/My Drive/documents/notehub/org-roam")
-  ;; Our org-roam journal directory
-  (org-roam-dailies-directory "journal")
+  (org-roam-directory "/mnt/c/Users/ranbi/Dropbox/notehub")
+  ;; Our org-roam journal directory | JOURNAL DISABLED
+  ;;(org-roam-dailies-directory "journal")
   ;; Auto completion
   (org-roam-completion-everywhere t)
   ;; Auto indentation disabled
   (org-adapt-indentation nil)
   (org-roam-capture-templates
    '(
-     ("n" "Note" plain
-      "%?\n* ${title}\n\n\n\n* Connections:\n\n\n\n* Parent:\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Note: :${Tag}:")
+     ("p" "Permanent Note" plain
+      "%?\n* ${title}\n\n\n* Connections:\n\n\n* Parent:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :PNote: :${Tag}:")
+      :unnarrowed t)
+
+     ("f" "Fleeting Note" plain
+      "%?\n\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :FNote: :${Tag}:")
       :unnarrowed t)
 
      ("t" "Topic Note" plain
@@ -394,10 +455,7 @@
 
 ;; Org Roam | A tool for organizing and navigating your notes
 (use-package org-roam
-  :ensure t
-  :config
-  ;; Add any additional org-roam specific configurations here
-  )
+  :ensure t)
 
 ;; Websocket | WebSocket client for Emacs
 (use-package websocket
@@ -430,6 +488,22 @@
 ;; =========================
 
 ;; | [ORG-ROAM IMPROVEMENTS] |
+
+;; Open file links in the current buffer
+(setq org-link-frame-setup '((file . find-file)))
+(setq org-file-apps '(("\\.org\\'" . emacs)
+                      (auto-mode . emacs)
+                      ("\\.mm\\'" . default)
+                      ("\\.x?html?\\'" . default)
+                      ("\\.pdf\\'" . default)))
+
+;; Ensure file links reuse the current window
+(setq org-link-frame-setup '((file . find-file)))
+(setq org-open-link-to-file-in-emacs 'find-file)
+
+;; Optional: prevent Emacs from splitting windows when opening files
+(setq split-width-threshold nil)
+(setq split-height-threshold nil)
 
 (defun org-roam-node-insert-immediate (arg &rest args)
   "Finishes the creation of a org-roam-capture-template immediately"
@@ -464,13 +538,6 @@ with that tag or creates a new one."
    nil
    (my/org-roam-filter-by-tag tag)))
 
-(defun my/org-roam-capture-inbox ()
-  "Inbox to capture quick ideas."
-  (interactive)
-  (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("i" "inbox" plain "* %?"
-                                   :if-new (file+head "Inbox.org" "#+title: Inbox\n")))))
-
 (setq org-roam-node-display-template
       (concat "${title:*} "
               (propertize "${tags:40}" 'face 'org-tag)))
@@ -485,36 +552,47 @@ with that tag or creates a new one."
 ;; Requiring the org-agenda package
 (require 'org-agenda)
 
-;; Remove tags in org-agenda
-(setq org-agenda-hide-tags-regexp ".")
-
 ;; Remove details in org task view
 (setq org-agenda-prefix-format
-      '((agenda . " %i %-12:c%?-12t% s")
-        (todo   . " ")
-        (tags   . " %i %-12:c")
-        (search . " %i %-12:c")))
+      '((agenda . "  %i %?-12t% s")
+        (timeline . "  % s")
+        (todo . "  %i ")
+        (tags . "  %i %s ")
+        (search . "  %i ")))
+
+;; Days Config
+(setq org-agenda-deadline-leaders '("Deadline: " "%d Days: " "%d Days Late: "))
 
 ;; TODO keywords
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "CANCELLED(c)" "DONE(d)")))
+      '((sequence "TODO(t)" "HOLD(h)" "|" "CANCELLED(c)" "DONE(d)")))
 
-;; Capture a quick idea
+(defface org-completed-task-face
+  '((t (:foreground "gray")))
+  "Face for completed tasks on deadlines."
+  :group 'org-faces)
+
+;; Automatically add a CLOSED timestamp when a task is marked as DONE
+(setq org-log-done 'time)
+
+(defun my/org-roam-capture-inbox ()
+  "Inbox to capture quick ideas."
+  (interactive)
+  (org-roam-capture- :node (org-roam-node-create)
+                     :templates '(("i" "inbox" plain "* %?"
+                                   :if-new (file+head "20240822090227-inbox.org" "Inbox")))))
+
 (defun org-capture-inbox ()
-     (interactive)
-     (call-interactively 'org-store-link)
-     (org-capture nil "i"))
+  "Quick capture into the Inbox."
+  (interactive)
+  (call-interactively 'org-store-link)
+  (org-capture nil "i"))
 
 ;; Use full window for org-capture
 (add-hook 'org-capture-mode-hook 'delete-other-windows)
 
 ;; Move to ending of file later
 (define-key global-map (kbd "C-c n x") 'org-capture-inbox)
-
-(setq org-agenda-custom-commands
-      '(("c" "Simple agenda view"
-         ((agenda "")
-          (alltodo "")))))
 
 (defun air-org-skip-subtree-if-priority (priority)
   "Skip an agenda subtree if it has a priority of PRIORITY.
@@ -527,63 +605,48 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
         subtree-end
       nil)))
 
-(setq org-agenda-custom-commands
+ (setq org-agenda-custom-commands
       '(("c" "Simple agenda view"
-         ((tags "PRIORITY=\"A\""
+         (
+          (tags "PRIORITY=\"A\""
                 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
-          (agenda "")
+                 (org-agenda-overriding-header "High-Priority")))
+          (agenda ""
+                  ((org-agenda-overriding-header "Week-Agenda")))
+             (tags "CLOSED>=\"<today>\""
+                ((org-agenda-overriding-header "Tasks Completed Today:")))
           (alltodo ""
-                   ((org-agenda-skip-function
+                   ((org-agenda-overriding-header "Global list of all TODO items")
+                    (org-agenda-skip-function
                      '(or (air-org-skip-subtree-if-priority ?A)
                           (org-agenda-skip-if nil '(scheduled deadline))))))))))
+
+;; Disable future tasks
+(setq org-agenda-todo-ignore-scheduled 'future)
 
 ;; Am-Pm in Org Agena
 (setq org-agenda-timegrid-use-ampm t)
 
-;; ;; Set the default agenda span to todays view
-;; (setq org-agenda-span 1)
+;; Archive location
+(setq org-archive-location "/mnt/c/Users/ranbi/Dropbox/notehub/20240822200723-archive.org::")
 
-;; ;; Set the default time range for agenda views
-;; (setq org-agenda-start-day "today")
+;; Auto archive
+(add-hook 'org-after-todo-state-change-hook
+          (lambda ()
+            (when (string= org-state "DONE")
+              (org-archive-subtree))))
 
-;; =========================
-;; | [BROWSER] |
-
-;; I don't think using a browser in emacs is the most fun experience?..
-
-;; ;; Ensure Emacs uses Python 3 for EAF
-;; (setenv "PYTHONPATH" "/usr/bin/python3")
-
-;; ;; Add EAF directory to load-path
-;; (add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-application-framework/")
-
-;; ;; Use-package configuration for EAF
-;; (use-package eaf
-;;   :load-path "~/.emacs.d/site-lisp/emacs-application-framework/"
-;;   :custom
-;;   (eaf-browser-continue-where-left-off t)  ;; Continue where you left off
-;;   (eaf-browser-enable-adblocker t)         ;; Enable Adblocker
-;;   :bind
-;;   ("C-c w" . eaf-open-browser)
-;;   :config
-;;   (require 'eaf)          ;; Ensure EAF core is loaded
-;;   (require 'eaf-browser)  ;; Load the browser module
-;;   ;; Define eaf keybindings
-;;   (eaf-bind-key scroll_up "C-n" eaf-browser-keybinding)
-;;   (eaf-bind-key scroll_down "C-p" eaf-browser-keybinding)
-;;   ;; More keybindings can be added similarly
-;; )
+;; Set the default agenda span to todays view
+(setq org-agenda-span 1)
 
 ;; =========================
 
 ;; | [KEY-BINDINGS] |
-;; Description: For settings related to key-binding
 
 (defun my-org-export-to-pdf ()
   "Export the current Org buffer to PDF and save it in the specified folder without a table of contents."
   (interactive)
-  (let* ((file-dir "/mnt/g/My Drive/documents/filehub/pdfs/")
+  (let* ((file-dir "/mnt/c/Users/ranbi/Dropbox/documents/filehub/pdfs/")
          (file-name (concat (file-name-as-directory file-dir)
                             (file-name-base (buffer-file-name)) ".pdf"))
          (org-export-with-toc nil)) ;; Disable table of contents
@@ -605,7 +668,7 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   "Open the devhub directory in dired-sidebar."
   (interactive)
   (dired-sidebar-toggle-sidebar) ;; Ensure the sidebar is open
-  (dired-sidebar-find-file "/mnt/g/My Drive/documents/devhub"))
+  (dired-sidebar-find-file "/mnt/c/Users/ranbi/Dropbox/devhub"))
 
 (global-set-key (kbd "C-c o d") 'open-devhub)
 
@@ -613,7 +676,7 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   "Open the notehub directory in dired-sidebar."
   (interactive)
   (dired-sidebar-toggle-sidebar) ;; Ensure the sidebar is open
-  (dired-sidebar-find-file "/mnt/g/My Drive/documents/notehub"))
+  (dired-sidebar-find-file "/mnt/c/Users/ranbi/Dropbox/notehub"))
 
 (global-set-key (kbd "C-c o n") 'open-notehub)
 
@@ -639,56 +702,69 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 ;; Keybinding to open enlight menu
 (global-set-key (kbd "C-c o q") #'enlight-open)
 
+;; Starting and stopping a langcheck
+(global-set-key (kbd "C-c l s") 'langtool-check)
+(global-set-key (kbd "C-c l d") 'langtool-check-done)
+
+;; Fix at point
+(global-set-key (kbd "C-c l c") 'langtool-correct-at-point)
+
+;; Correct the buffer
+(global-set-key (kbd "C-c l b") 'langtool-correct-buffer)
+
+;; Check what the language error is
+(global-set-key (kbd "C-c l e") 'langtool-show-brief-message-at-point)
+
 ;; =========================
 
-;; | [START-UP ] |
+;; ;; | [START-UP ] |
 
-;; https://github.com/ichernyshovvv/enlight?tab=readme-ov-file#installation
+;; ;; https://github.com/ichernyshovvv/enlight?tab=readme-ov-file#installation
 
-;; Enlight UI
-(defvar enlight-guix
-  ;; ASCII Art
-  (propertize
-   "⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣾⡿⠿⠿⢿⣿⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⣀⣴⣿⠿⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣶⣄⠀⠀⠀⠀⠀
-⠀⠀⠀⢠⣾⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣷⣄⠀⠀⠀
-⠀⠀⣴⣿⠟⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠙⣿⣧⡀⠀
-⠀⣼⣿⠃⠀⠀⠀⠀⠀⠀⣾⣯⣈⣧⠀⠀⢰⣿⣅⣹⡀⠀⠀⠀⠀⠀⠈⢿⣷⠀
-⢰⣿⠇⠀⠀⠀⠀⠀⠀⠀⠹⢿⣿⠏⠀⠀⠈⠿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠘⣿⣇
-⣾⣿⠀⠀⢰⣾⡿⣷⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣰⠿⣿⣶⠀⠀⢻⣿
-⣿⣿⠀⠀⠀⢸⣷⣄⠉⠙⠛⠷⠶⠶⠶⠶⠶⠶⠶⠛⠛⠉⢀⣴⣿⠀⠀⠀⢸⣿
-⢻⣿⠀⠀⠀⠘⣿⣿⣷⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣿⣿⡏⠀⠀⠀⣼⣿
-⠸⣿⡇⠀⠀⠀⢻⣿⣿⣿⣿⣿⣷⣶⣶⣶⣶⣾⣿⣿⣿⣿⣿⣿⠁⠀⠀⢠⣿⡇
-⠀⢻⣿⣄⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⢀⣾⡟⠀
-⠀⠀⠻⣿⣦⠀⠀⠈⢻⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠃⠀⠀⣠⣿⡟⠀⠀
-⠀⠀⠀⠘⢿⣷⣤⡀⠀⠙⠷⣦⣀⡀⠀⠀⠀⣀⣤⡾⠋⠀⠀⣠⣾⡿⠋⠀⠀⠀
-⠀⠀⠀⠀⠀⠉⠻⣿⣶⣤⣀⡀⠉⠙⠛⠛⠛⠉⢁⣀⣤⣶⣿⠟⠋⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⠿⢿⣿⣷⣾⣿⡿⠿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀"
-   'face 'enlight-yellow-bold))
+;; ;; Enlight UI
+;; (defvar enlight-guix
+;;   ;; ASCII Art
+;;   (propertize
+;;    "⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣾⡿⠿⠿⢿⣿⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀
+;; ⠀⠀⠀⠀⠀⣀⣴⣿⠿⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣶⣄⠀⠀⠀⠀⠀
+;; ⠀⠀⠀⢠⣾⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣷⣄⠀⠀⠀
+;; ⠀⠀⣴⣿⠟⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠙⣿⣧⡀⠀
+;; ⠀⣼⣿⠃⠀⠀⠀⠀⠀⠀⣾⣯⣈⣧⠀⠀⢰⣿⣅⣹⡀⠀⠀⠀⠀⠀⠈⢿⣷⠀
+;; ⢰⣿⠇⠀⠀⠀⠀⠀⠀⠀⠹⢿⣿⠏⠀⠀⠈⠿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠘⣿⣇
+;; ⣾⣿⠀⠀⢰⣾⡿⣷⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣰⠿⣿⣶⠀⠀⢻⣿
+;; ⣿⣿⠀⠀⠀⢸⣷⣄⠉⠙⠛⠷⠶⠶⠶⠶⠶⠶⠶⠛⠛⠉⢀⣴⣿⠀⠀⠀⢸⣿
+;; ⢻⣿⠀⠀⠀⠘⣿⣿⣷⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣿⣿⡏⠀⠀⠀⣼⣿
+;; ⠸⣿⡇⠀⠀⠀⢻⣿⣿⣿⣿⣿⣷⣶⣶⣶⣶⣾⣿⣿⣿⣿⣿⣿⠁⠀⠀⢠⣿⡇
+;; ⠀⢻⣿⣄⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⢀⣾⡟⠀
+;; ⠀⠀⠻⣿⣦⠀⠀⠈⢻⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠃⠀⠀⣠⣿⡟⠀⠀
+;; ⠀⠀⠀⠘⢿⣷⣤⡀⠀⠙⠷⣦⣀⡀⠀⠀⠀⣀⣤⡾⠋⠀⠀⣠⣾⡿⠋⠀⠀⠀
+;; ⠀⠀⠀⠀⠀⠉⠻⣿⣶⣤⣀⡀⠉⠙⠛⠛⠛⠉⢁⣀⣤⣶⣿⠟⠋⠀⠀⠀⠀⠀
+;; ⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⠿⢿⣿⣷⣾⣿⡿⠿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀"
+;;    'face 'enlight-yellow-bold))
 
-;; Enlight | Custom startup screen
-(use-package enlight
-  :ensure t
-  :custom
-  ;; Enlight quick access
-  (enlight-content
-   (concat
-    enlight-guix
-    "\n\n\n"
-    (enlight-menu
-     '(("Org Mode"
-        ("Org-Agenda" (org-agenda nil "a") "C-c o a")
-        ("Agenda" (lambda () (interactive) (find-file "/mnt/g/My Drive/documents/notehub/org-roam/agenda.org")) "C-c o g"))
-       ("\nFolders"
-        ("Devhub" (dired "/mnt/g/My Drive/documents/devhub") "C-c o d")
-        ("Notehub" (dired "/mnt/g/My Drive/documents/notehub") "C-c o n")))))))
+;; ;; Enlight | Custom startup screen
+;; (use-package enlight
+;;   :ensure t
+;;   :custom
+;;   ;; Enlight quick access
+;;   (enlight-content
+;;    (concat
+;;     enlight-guix
+;;     "\n\n\n"
+;;     (enlight-menu
+;;      '(("Org Mode"
+;;         ("Org-Agenda" (org-agenda nil "a") "C-c o a")
+;;         ("Agenda" (lambda () (interactive) (find-file "/mnt/g/My Drive/documents/notehub/agenda.org")) "C-c o g"))
+;;        ("\nFolders"
+;;         ("Devhub" (dired "/mnt/g/My Drive/documents/devhub") "C-c o d")
+;;         ("Notehub" (dired "/mnt/g/My Drive/documents/notehub") "C-c o n")))))))
 
-;; Disable scratch
-(setq initial-scratch-message nil)
-(setq inhibit-startup-screen t)
+;; ;; Disable scratch
+;; (setq initial-scratch-message nil)
+;; (setq inhibit-startup-screen t)
 
-;; Set our inital buffer to be enlight
-(setopt initial-buffer-choice #'enlight)
+;; ;; Set our inital buffer to be enlight
+;; (setopt initial-buffer-choice #'enlight)
 
 ;; =========================
 
