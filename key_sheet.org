@@ -168,6 +168,10 @@ vv**
 ** C-c n x: Capture a quick TODO
 ** C-c n c: Open Capture menu
 
+* Smart Notes
+** C-c c i: Capture Fleeting Note
+** C-c c l: Capture Literature Note
+
 * Custom-Keybinds
 ** C-c o e: Export a .org file to PDF
 

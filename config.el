@@ -173,13 +173,13 @@
 (setq visual-fill-column-width 95) ;; The less the thinner
 (setq visual-fill-column-center-text t)
 
-;; Full screen
-(defun my/fullscreen-on-startup ()
-  "Set Emacs to fullscreen on startup."
-  (add-to-list 'default-frame-alist '(fullscreen . maximized)))
+;; ;; Full screen
+;; (defun my/fullscreen-on-startup ()
+;;   "Set Emacs to fullscreen on startup."
+;;   (add-to-list 'default-frame-alist '(fullscreen . maximized)))
 
-;; Setting our full screen to launch on startup
-(add-hook 'emacs-startup-hook 'my/fullscreen-on-startup)
+;; ;; Setting our full screen to launch on startup
+;; (add-hook 'emacs-startup-hook 'my/fullscreen-on-startup)
 
 (defun my-dired-home ()
   "Open Dired in the home directory."
@@ -295,24 +295,6 @@
 
 ;; =========================
 
-;; [PYTHON]
-
-
-
-;; =========================
-
-;; [C]
-
-
-
-;; =========================
-
-;; [JavaScript]
-
-
-
-;; =========================
-
 ;; | [ORG-MODE] |
 
 ;; Org | A document editing, formatting, and organizing file format
@@ -323,15 +305,15 @@
   (setq org-startup-indented t
         org-hide-emphasis-markers t
         org-confirm-babel-evaluate nil
-        org-directory "/mnt/c/Users/ranbi/Dropbox/notehub"
-        org-agenda-files '("/mnt/c/Users/ranbi/Dropbox/notehub"))
+        org-directory "/mnt/c/Users/ranbi/Dropbox/slipbox/"
+        org-agenda-files '("/mnt/c/Users/ranbi/Dropbox/slipbox/"))
 
   ;; Org syntax highlighting
   (setq org-src-fontify-natively t)
 
   ;; Fancy Lambdas
   (global-prettify-symbols-mode t)
-  
+    
   ;; Enable Babel languages for code execution
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -339,6 +321,7 @@
      (python . t)
      (lisp . t)
      (C . t)
+     (js . t)
      (shell . t)))
 
   ;; Org modern mode
@@ -402,7 +385,7 @@
   :ensure t
   :custom
   ;; Our org-roam directory
-  (org-roam-directory "/mnt/c/Users/ranbi/Dropbox/notehub")
+  (org-roam-directory "/mnt/c/Users/ranbi/Dropbox/slipbox")
   ;; Our org-roam journal directory | JOURNAL DISABLED
   ;;(org-roam-dailies-directory "journal")
   ;; Auto completion
@@ -413,12 +396,7 @@
    '(
      ("p" "Permanent Note" plain
       "%?\n* ${title}\n\n\n* Connections:\n\n\n* Parent:\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :PNote: :${Tag}:")
-      :unnarrowed t)
-
-     ("f" "Fleeting Note" plain
-      "%?\n\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :FNote: :${Tag}:")
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :${Tag}:")
       :unnarrowed t)
 
      ("t" "Topic Note" plain
@@ -432,8 +410,8 @@
       :unnarrowed t)
      
      ("r" "Reference Note" plain
-      "%?\n* Synopsis:\n\n\n* Source:\n%^{Link/Path}"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+author: %^{Author}\n#+year: %^{Year}\n#+filetags: :Reference: :${Tag}:")
+      "%?\n* Source:\n%^{Link/Path}"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+author: %^{Author}\n#+year: %^{Year}\n#+filetags: :${Tag}:")
       :unnarrowed t)
 
      ))
@@ -579,8 +557,15 @@ with that tag or creates a new one."
   "Inbox to capture quick ideas."
   (interactive)
   (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("i" "inbox" plain "* %?"
-                                   :if-new (file+head "20240822090227-inbox.org" "Inbox")))))
+                     :templates '(("i" "inbox" plain "\n* %?"
+                                   :if-new (file+head "20240827053303-inbox.org" "Inbox")))))
+
+(defun my/org-roam-capture-literature ()
+  "Inbox to capture quick ideas."
+  (interactive)
+  (org-roam-capture- :node (org-roam-node-create)
+                     :templates '(("l" "literature" plain "\n* \n\n=SOURCE=: \n=PAGE=:%?"
+                                   :if-new (file+head "20240827054702-literature_notes.org" "Inbox")))))
 
 (defun org-capture-inbox ()
   "Quick capture into the Inbox."
@@ -588,11 +573,14 @@ with that tag or creates a new one."
   (call-interactively 'org-store-link)
   (org-capture nil "i"))
 
+(defun org-capture-literature ()
+  "Quick capture into the Inbox."
+  (interactive)
+  (call-interactively 'org-store-link)
+  (org-capture nil "i"))
+
 ;; Use full window for org-capture
 (add-hook 'org-capture-mode-hook 'delete-other-windows)
-
-;; Move to ending of file later
-(define-key global-map (kbd "C-c n x") 'org-capture-inbox)
 
 (defun air-org-skip-subtree-if-priority (priority)
   "Skip an agenda subtree if it has a priority of PRIORITY.
@@ -676,7 +664,7 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   "Open the notehub directory in dired-sidebar."
   (interactive)
   (dired-sidebar-toggle-sidebar) ;; Ensure the sidebar is open
-  (dired-sidebar-find-file "/mnt/c/Users/ranbi/Dropbox/notehub"))
+  (dired-sidebar-find-file "/mnt/c/Users/ranbi/Dropbox/slipbox"))
 
 (global-set-key (kbd "C-c o n") 'open-notehub)
 
@@ -694,7 +682,10 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 (global-set-key (kbd "C-c n I") 'org-roam-node-insert-immediate)
 
 ;; Creates a quick note to be stored in our Inbox.org
-(global-set-key (kbd "C-c n b") #'my/org-roam-capture-inbox)
+(global-set-key (kbd "C-c c i") #'my/org-roam-capture-inbox)
+
+;; Creates a quick note to be stored in our Inbox.org
+(global-set-key (kbd "C-c c l") #'my/org-roam-capture-literature)
 
 ;; Bind to a key
 (global-set-key (kbd "C-c n t") #'my/org-roam-find-tag)
@@ -714,57 +705,6 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 
 ;; Check what the language error is
 (global-set-key (kbd "C-c l e") 'langtool-show-brief-message-at-point)
-
-;; =========================
-
-;; ;; | [START-UP ] |
-
-;; ;; https://github.com/ichernyshovvv/enlight?tab=readme-ov-file#installation
-
-;; ;; Enlight UI
-;; (defvar enlight-guix
-;;   ;; ASCII Art
-;;   (propertize
-;;    "⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣾⡿⠿⠿⢿⣿⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀
-;; ⠀⠀⠀⠀⠀⣀⣴⣿⠿⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠉⠛⠿⣿⣶⣄⠀⠀⠀⠀⠀
-;; ⠀⠀⠀⢠⣾⡿⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣷⣄⠀⠀⠀
-;; ⠀⠀⣴⣿⠟⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⢀⣀⠀⠀⠀⠀⠀⠀⠙⣿⣧⡀⠀
-;; ⠀⣼⣿⠃⠀⠀⠀⠀⠀⠀⣾⣯⣈⣧⠀⠀⢰⣿⣅⣹⡀⠀⠀⠀⠀⠀⠈⢿⣷⠀
-;; ⢰⣿⠇⠀⠀⠀⠀⠀⠀⠀⠹⢿⣿⠏⠀⠀⠈⠿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠘⣿⣇
-;; ⣾⣿⠀⠀⢰⣾⡿⣷⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣰⠿⣿⣶⠀⠀⢻⣿
-;; ⣿⣿⠀⠀⠀⢸⣷⣄⠉⠙⠛⠷⠶⠶⠶⠶⠶⠶⠶⠛⠛⠉⢀⣴⣿⠀⠀⠀⢸⣿
-;; ⢻⣿⠀⠀⠀⠘⣿⣿⣷⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣿⣿⡏⠀⠀⠀⣼⣿
-;; ⠸⣿⡇⠀⠀⠀⢻⣿⣿⣿⣿⣿⣷⣶⣶⣶⣶⣾⣿⣿⣿⣿⣿⣿⠁⠀⠀⢠⣿⡇
-;; ⠀⢻⣿⣄⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⢀⣾⡟⠀
-;; ⠀⠀⠻⣿⣦⠀⠀⠈⢻⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠃⠀⠀⣠⣿⡟⠀⠀
-;; ⠀⠀⠀⠘⢿⣷⣤⡀⠀⠙⠷⣦⣀⡀⠀⠀⠀⣀⣤⡾⠋⠀⠀⣠⣾⡿⠋⠀⠀⠀
-;; ⠀⠀⠀⠀⠀⠉⠻⣿⣶⣤⣀⡀⠉⠙⠛⠛⠛⠉⢁⣀⣤⣶⣿⠟⠋⠀⠀⠀⠀⠀
-;; ⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠻⠿⢿⣿⣷⣾⣿⡿⠿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀"
-;;    'face 'enlight-yellow-bold))
-
-;; ;; Enlight | Custom startup screen
-;; (use-package enlight
-;;   :ensure t
-;;   :custom
-;;   ;; Enlight quick access
-;;   (enlight-content
-;;    (concat
-;;     enlight-guix
-;;     "\n\n\n"
-;;     (enlight-menu
-;;      '(("Org Mode"
-;;         ("Org-Agenda" (org-agenda nil "a") "C-c o a")
-;;         ("Agenda" (lambda () (interactive) (find-file "/mnt/g/My Drive/documents/notehub/agenda.org")) "C-c o g"))
-;;        ("\nFolders"
-;;         ("Devhub" (dired "/mnt/g/My Drive/documents/devhub") "C-c o d")
-;;         ("Notehub" (dired "/mnt/g/My Drive/documents/notehub") "C-c o n")))))))
-
-;; ;; Disable scratch
-;; (setq initial-scratch-message nil)
-;; (setq inhibit-startup-screen t)
-
-;; ;; Set our inital buffer to be enlight
-;; (setopt initial-buffer-choice #'enlight)
 
 ;; =========================
 
