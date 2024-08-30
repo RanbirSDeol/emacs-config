@@ -189,6 +189,9 @@
 ;; Optionally bind it to a key
 (global-set-key (kbd "C-x d") 'my-dired-home)
 
+;; Clock
+(setq display-time-format "%I:%M:%S %p")
+
 ;; =========================
 
 ;; | [EDITING] |
@@ -395,18 +398,18 @@
   (org-roam-capture-templates
    '(
      ("p" "Permanent Note" plain
-      "%?\n* ${title}\n\n\n* Connections:\n\n\n* Parent:\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :${Tag}:")
+      "%?\n* ${title}\n\n\n* References:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :${Tag}: :Draft:")
       :unnarrowed t)
 
      ("t" "Topic Note" plain
-      "%?\n* Children:\n\n\n* Parent:\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Topic: :${Tag}:")
+      "%?\n* ${title}:\n\n\n* References:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Topic: :Draft:")
       :unnarrowed t)
 
      ("i" "Index Note" plain
-      "%?\n* Children:\n\n\n* Parent:\n\n"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Index: :${Tag}:")
+      "%?\n* ${title}:\n\n\n* References:\n\n"
+      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %<%Y-%m-%d %a %H:%M>\n#+filetags: :Index: :Draft:")
       :unnarrowed t)
      
      ("r" "Reference Note" plain
@@ -616,7 +619,7 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 (setq org-agenda-timegrid-use-ampm t)
 
 ;; Archive location
-(setq org-archive-location "/mnt/c/Users/ranbi/Dropbox/notehub/20240822200723-archive.org::")
+(setq org-archive-location "/mnt/c/Users/ranbi/Dropbox/slipbox/20240827085640-archive.org::")
 
 ;; Auto archive
 (add-hook 'org-after-todo-state-change-hook
